@@ -11,18 +11,6 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
 app.use('/', express.static(path.join(__dirname, '../public')))
-// your API calls
-
-// example API call
-app.get('/apod', async (req, res) => {
-    try {
-        let image = await fetch(`https://api.nasa.gov/planetary/apod?api_key=${process.env.API_KEY}`)
-            .then(res => res.json())
-        res.send({ image })
-    } catch (err) {
-        console.log('error:', err);
-    }
-})
 
 app.post('/photos', async (req, res) => {
     // got the api urls from https://github.com/sreejithvs333/nd032-c2-functional-programming-with-javascript-starter/blob/project/project/src/server/index.js
