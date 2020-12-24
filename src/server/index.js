@@ -25,6 +25,7 @@ app.get('/apod', async (req, res) => {
 })
 
 app.post('/photos', async (req, res) => {
+    // got the api urls from https://github.com/sreejithvs333/nd032-c2-functional-programming-with-javascript-starter/blob/project/project/src/server/index.js
     let rover_name = req.body.rover
     let date = ''
     let url = `https://api.nasa.gov/mars-photos/api/v1/rovers/${rover_name}/photos?earth_date=${date}&api_key=${process.env.API_KEY}`
