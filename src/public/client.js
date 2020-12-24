@@ -1,129 +1,137 @@
-
-let store = {
-    user: { name: "Student" },
-    apod: '',
-    rovers: ['Curiosity', 'Opportunity', 'Spirit'],
-}
-
-// add our markup to the page
-const root = document.getElementById('root')
-
-const updateStore = (store, newState) => {
-    store = Object.assign(store, newState)
+// const Immutable = require('immutable')
+let store = Immutable.Map({
+    'user': Immutable.Map({
+        name: 'Ardeshir'
+    }),
+    'apod': '',
+    'rovers': Immutable.List(['Curiosity', 'Opportunity', 'Spirit']),
+    'roversStatus': Immutable.Map({})
+  })
+  const root = document.getElementById('root')
+  const updateStore = (state, newState) => {
+    store = state.merge(newState)
     render(root, store)
-}
-
-const render = async (root, state) => {
-    root.innerHTML = App(state)
-}
-
-
-// create content
-const App = (state) => {
-    let { rovers, apod } = state
-
-    return `
-        <header></header>
-        <main>
-            ${Greeting(store.user.name)}
-            <section>
-                <h3>Put things on the page!</h3>
-                <p>Here is an example section.</p>
-                <p>
-                    One of the most popular websites at NASA is the Astronomy Picture of the Day. In fact, this website is one of
-                    the most popular websites across all federal agencies. It has the popular appeal of a Justin Bieber video.
-                    This endpoint structures the APOD imagery and associated metadata so that it can be repurposed for other
-                    applications. In addition, if the concept_tags parameter is set to True, then keywords derived from the image
-                    explanation are returned. These keywords could be used as auto-generated hashtags for twitter or instagram feeds;
-                    but generally help with discoverability of relevant imagery.
-                </p>
-                ${ImageOfTheDay(apod)}
-            </section>
-        </main>
-        <footer></footer>
-    `
-}
-
-// listening for load event because page should load before any JS is called
-// window.addEventListener('load', () => {
-//     render(root, store)
-// })
-
-// ------------------------------------------------------  COMPONENTS
-
-// Pure function that renders conditional information -- THIS IS JUST AN EXAMPLE, you can delete it.
-const Greeting = (name) => {
-    if (name) {
-        return `
-            <h1>Welcome, ${name}!</h1>
-        `
-    }
-
-    return `
-        <h1>Hello!</h1>
-    `
-}
-
-// Example of a pure function that renders infomation requested from the backend
-const ImageOfTheDay = (apod) => {
-
-    // If image does not already exist, or it is not from today -- request it again
-    const today = new Date()
-    const photodate = new Date(apod.date)
-    console.log(photodate.getDate(), today.getDate());
-
-    console.log(photodate.getDate() === today.getDate());
-    if (!apod || apod.date === today.getDate() ) {
-        getImageOfTheDay(store)
-    }
-
-    // check if the photo of the day is actually type video!
-    if (apod.media_type === "video") {
-        return (`
-            <p>See today's featured video <a href="${apod.url}">here</a></p>
-            <p>${apod.title}</p>
-            <p>${apod.explanation}</p>
-        `)
-    } else {
-        return (`
-            <img src="${apod.image.url}" height="350px" width="100%" />
-            <p>${apod.image.explanation}</p>
-        `)
-    }
-}
-
-// ------------------------------------------------------  API CALLS
-
-// Example API call
-const getImageOfTheDay = (state) => {
-    let { apod } = state
-
-    fetch(`http://localhost:3000/apod`)
-        .then(res => res.json())
-        .then(apod => 
-            {   console.log(apod)
-                updateStore(store, { apod })
-                console.log(store)})
-
-    return data
-}
-
-// fetch(`https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/photos?earth_date=2015-6-3&api_key=DEMO_KEY`)
-// .then(res=>res.json())
-// .then(res=>console.log(res))
-const bttn = document.getElementsByTagName("BUTTON")
-console.log(bttn)
-bttn[0].addEventListener('click',e=>{
-        console.log(e.target.innerHTML)
-        fetch('/photos',
-        {
+  }
+  const render = async(root, state) => {
+    root.innerHTML = responseApp(state)
+  }
+  
+  const renderUI = async() => {
+    root.innerHTML = App()
+  }
+  
+  const getroverData = (input) => {
+    fetch('/photos', {
             method: 'POST', // or 'PUT'
             headers: {
-              'Content-Type': 'application/json',
+                'Content-Type': 'application/json',
             },
-            body:JSON.stringify({'rover':e.target.innerHTML}),
-          }
-        )
-        .then(res=>res.json())
-        .then(data=>console.log(data.roverData))
-    })
+            body: JSON.stringify({
+                'rover': input
+            }),
+        })
+        .then(res => res.json())
+        .then(data => {
+            const {
+                rover
+            } = data.roverData[0]
+            const earth_date = data.roverData[0].earth_date
+                //  console.log(rover)
+            const {
+                id,
+                name,
+                landing_date,
+                launch_date,
+                status
+            } = rover
+            const imagesList = data.roverData.map((element) => element.img_src)
+                //  console.log(imagesList)
+            const roverObject = {
+                    'roversStatus': {
+                        id: id,
+                        name: name,
+                        Landing_date: landing_date,
+                        Launch_date: launch_date,
+                        status: status,
+                        images: imagesList,
+                        earth_date: earth_date
+                    }
+                }
+                // console.log(roverObject)  
+            updateStore(store, roverObject)
+                // console.log(store) 
+        })
+  }
+  
+  // create content
+  const App = () => {
+        return `
+  <header></header>
+  <main>
+      <section>
+          <h3>Let's Explore</h3>
+          <p>Pick a Rover</p>
+      </section>
+      ${roverstemplate()}
+  </main>
+  <footer></footer>
+  `
+  
+    }
+    // 
+  const roverstemplate = () => {
+    const rovers = store.get('rovers')
+    const roversArray = rovers.toArray()
+    return roversArray.reduce((finalHtmal, input) => {
+        return finalHtmal += `
+                          <section class = ${input}>  
+                            <h1>${input}</h1>
+                            <button onclick=rover("${input}")>${input}</button>
+                          </section> 
+                          `;
+    }, '')
+  }
+  
+  const rover = (input) => {
+  
+    return getroverData(input)
+        // return render(root,store,input)
+  }
+  
+  // build image templates for responseApp
+  const produceImageTemplate = (images) => {
+    return images.reduce((finalHtml, imagelink) => {
+        return finalHtml += `<div><img src=${imagelink}></div>`
+    }, "")
+  }
+  
+  // responseApp functionalities:
+  const responseApp = (state) => {
+    const rover_status = state.get('roversStatus')
+    const links = state.get('roversStatus').get('images')
+    return `<header>
+              <h1><u>${rover_status.get('name')}</u></h1>
+          </header>
+          <section>
+              <h2><u>Important Dates</u></h2>
+                <p>Landing Date:${rover_status.get('Landing_date')}</p>
+                <p>Launch Date:${rover_status.get('Launch_date')}</p>
+                <p>Images Taken ON:${rover_status.get('earth_date')}</p>
+          </section>
+          <section>
+              <h2><u>Status Of Mission</u></h2>
+                <p>${rover_status.get('status')}</p>
+          </section>
+          <section>
+            <h1><u>Images</u></h1>
+            <ul>
+              ${produceImageTemplate(links)}
+            </ul>  
+          </section>  
+          `
+  }
+  
+  
+  window.onload = function() {
+    renderUI()
+  }
