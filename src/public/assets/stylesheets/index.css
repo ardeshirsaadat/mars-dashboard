@@ -19,6 +19,37 @@ main {
 footer {
   /* footer styles */
 }
+section {
+  display: block;
+}
+main {
+  display: flex;
+  justify-content: center;
+  background-color: gray;
+  align-items: center;
+  flex-wrap: wrap;
+}
+main > section {
+  background-color: #29292c00;
+  width: 300px;
+  margin: 10px;
+  text-align: center;
+  line-height: 75px;
+  font-size: 30px;
+  height: 40%;
+}
+.Curiosity {
+  background-image: url("https://cnet2.cbsistatic.com/img/YtClYL5p6hzuXMGnSkW_wI8OfuY=/1092x0/2019/05/22/9a508851-4b54-41b1-9d19-c48cb6a03279/curiosityselfiemay2019.jpg");
+  background-size: contain;
+}
+.Opportunity {
+  background-image: url("https://cdn.borntoengineer.com/2019/02/nasa-is-still-holding-out-hope-for-the-mars-opportunity-rover__141568_.jpg");
+  background-size: contain;
+}
+.Spirit {
+  background-image: url("https://astroengine.files.wordpress.com/2009/05/spirit.jpg");
+  background-size: contain;
+}
 
 /* -------------------  TABLET  --------------------- */
 @media (min-width: 768px) {

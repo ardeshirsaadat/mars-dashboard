@@ -1,3 +1,4 @@
+
 let store = {
     user: { name: "Student" },
     apod: '',
@@ -44,9 +45,9 @@ const App = (state) => {
 }
 
 // listening for load event because page should load before any JS is called
-window.addEventListener('load', () => {
-    render(root, store)
-})
+// window.addEventListener('load', () => {
+//     render(root, store)
+// })
 
 // ------------------------------------------------------  COMPONENTS
 
@@ -99,7 +100,30 @@ const getImageOfTheDay = (state) => {
 
     fetch(`http://localhost:3000/apod`)
         .then(res => res.json())
-        .then(apod => updateStore(store, { apod }))
+        .then(apod => 
+            {   console.log(apod)
+                updateStore(store, { apod })
+                console.log(store)})
 
     return data
 }
+
+// fetch(`https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/photos?earth_date=2015-6-3&api_key=DEMO_KEY`)
+// .then(res=>res.json())
+// .then(res=>console.log(res))
+const bttn = document.getElementsByTagName("BUTTON")
+console.log(bttn)
+bttn[0].addEventListener('click',e=>{
+        console.log(e.target.innerHTML)
+        fetch('/photos',
+        {
+            method: 'POST', // or 'PUT'
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body:JSON.stringify({'rover':e.target.innerHTML}),
+          }
+        )
+        .then(res=>res.json())
+        .then(data=>console.log(data.roverData))
+    })
